@@ -140,6 +140,10 @@ public:
     /** \brief enables self-learning forwarding support
      */
     bool allowSelfLearning;
+
+    /** \brief enables location feature in nodes
+    */
+    bool allowLocationField;
   };
 
   /** \brief counters provided by GenericLinkService
