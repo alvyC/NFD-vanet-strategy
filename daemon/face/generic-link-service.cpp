@@ -44,7 +44,8 @@ GenericLinkService::Options::Options()
   , baseCongestionMarkingInterval(time::milliseconds(100)) // Interval from RFC 8289 (CoDel)
   , defaultCongestionThreshold(65536) // This default value works well for a queue capacity of 200KiB
   , allowSelfLearning(false)
-  , allowLocationField(false)
+  , allowPLocationField(false)
+  , allowDLocationField(false)
 {
 }
 
@@ -160,12 +161,13 @@ GenericLinkService::encodeLpFields(const ndn::PacketBase& netPkt, lp::Packet& lp
     }
   }
 
-  if (m_options.allowLocationField) {
+  if (m_options.allowDLocationField) {
     shared_ptr<lp::DLocationTag> dLocationTag = netPkt.getTag<lp::DLocationTag>();
     if(dLocationTag != nullptr) {
       lpPacket.add<lp::DLocationField>(*dLocationTag);
     }
-
+  }
+  if (m_options.allowPLocationField) {
     shared_ptr<lp::PLocationTag> pLocationTag = netPkt.getTag<lp::PLocationTag>();
     if(pLocationTag != nullptr) {
       lpPacket.add<lp::PLocationField>(*pLocationTag);

@@ -143,7 +143,8 @@ public:
 
     /** \brief enables location feature in nodes
     */
-    bool allowLocationField;
+    bool allowDLocationField;
+    bool allowPLocationField;
   };
 
   /** \brief counters provided by GenericLinkService
