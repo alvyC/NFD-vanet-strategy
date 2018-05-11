@@ -25,6 +25,11 @@
 
 #include "vanet-strategy.hpp"
 
+#include <ndn-cxx/lp/plocation.hpp>
+#include <ndn-cxx/lp/dlocation.hpp>
+#include <ndn-cxx/lp/empty-value.hpp>
+#include <ndn-cxx/lp/tags.hpp>
+
 namespace nfd {
 namespace fw {
 
@@ -37,14 +42,39 @@ void
 VanetStrategy::afterReceiveInterest(const Face& inFace, const Interest& interest,
                                     const shared_ptr<pit::Entry>& pitEntry)
 {
+  const fib::Entry& fibEntry = this->lookupFib(*pitEntry);
+  const fib::NextHopList& nexthops = fibEntry.getNextHops();
 
+  shared_ptr<lp::DLocationTag> dLocationTag = interest.getTag<lp::DLocationTag>();
+  shared_ptr<lp::PLocationTag> pLocationTag = interest.getTag<lp::PLocationTag>();
+
+  // if there is a dlocationtag
+    // if distance from my location is closer than the distance from my previous location
+        // if centrality score for this prefix is found
+          // schedule interest sending based on distance from destination and centrality score,
+        // else schedule interest sending based on distance
+    // else
+  // else, if there is no dlocationtad
+    // look up location-to-prefix table
+    // if a matching location is found for the prefix
+      // schedule interest sending based on distance from destination and centrality score, if found
+    // else
+      // if centrality score for this prefix is found
+        // schedule interest sending based on centrality score
+      // else, there is no centrality score or location information
+        // Todo: what to do in this scenario
 }
 
 void
 VanetStrategy::afterReceiveData(const shared_ptr<pit::Entry>& pitEntry,
                                 const Face& inFace, const Data& data)
 {
+  // get the dlocationtag from the data packet
+  shared_ptr<lp::PLocationTag> pLocationTag = data.getTag<lp::PLocationTag>();
 
+  // update the prefix-to-location table
+
+  // update prefix-to-centralityScore table: increase the score of the prefix
 }
 
 void
