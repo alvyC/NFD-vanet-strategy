@@ -27,13 +27,27 @@
 #define NFD_DAEMON_FW_VANET_ROUTE_STRATEGY_HPP
 
 #include "strategy.hpp"
+#include "vanet-measurements.hpp"
+
+#include <ndn-cxx/lp/plocation.hpp>
+#include <ndn-cxx/lp/dlocation.hpp>
+#include <ndn-cxx/util/scheduler.hpp>
+#include <ndn-cxx/mgmt/nfd/controller.hpp>
+#include <ndn-cxx/face.hpp>
+
+#include <cmath>
+#include <math.h>
+
+#include <boost/asio.hpp>
 
 namespace nfd {
 namespace fw {
+namespace vanet {
+
 class VanetStrategy : public Strategy
 {
 public:
-  VanetStrategy(Forwarder& forwarder);
+  VanetStrategy(Forwarder& forwarder, const Name& name);
 
   void
   afterReceiveInterest(const Face& inFace, const Interest& interest,
@@ -47,10 +61,65 @@ public:
   afterReceiveNack(const Face& inFace, const lp::Nack& nack,
                    const shared_ptr<pit::Entry>& pitEntry) override;
 
+  static const Name&
+  getStrategyName();
+
+private:
+  // This function converts decimal degrees to radians
+  double deg2rad(double deg) {
+    return (deg * M_PI / 180);
+  }
+
+  //  This function converts radians to decimal degrees
+  double rad2deg(double rad) {
+    return (rad * 180 / M_PI);
+  }
+
+  double
+  calculateDistance(double lat1d, double lon1d,
+                    double lat2d, double lon2d);
+
+  std::pair<double, double>
+  getMyLocation() {
+    return {0, 0}; // latitude, longitude
+  }
+
+
+  double
+  calculateTimer(double lat1d, double lon1d,
+                 double lat2d, double lon2d);
+
+  void
+  forwardInterest(const Interest& interest,
+                  const shared_ptr<pit::Entry>& pitEntry,
+                  FaceInfo* info,
+                  Face& outFace) {
+    // send the interest
+    this->sendInterest(pitEntry, outFace, interest);
+
+    // remove the interest from the pool, because it has been sent.
+    m_scheduledInterstPool.erase(interest.getName());
+
+    // update the score of this prefix
+    info->incrementInterest();
+  }
+
+private:
+  const double earthRadiusKm = 6371;
+
+  VanetMeasurements m_measurements;
+
+  boost::asio::io_service m_ioService;
+
+  ndn::Scheduler m_scheduler;
+  ndn::Face m_face;
+  ndn::KeyChain m_keyChain;
+  ndn::nfd::Controller m_controller;
+  std::unordered_map<ndn::Name, ndn::EventId> m_scheduledInterstPool;
 };
 
+} // namespace vanet
 } // namespace fw
-
 } // namespace nfd
 
 #endif // NFD_DAEMON_FW_VANET_ROUTE_STRATEGY_HPP

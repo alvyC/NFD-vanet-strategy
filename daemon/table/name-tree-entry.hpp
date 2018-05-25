@@ -166,6 +166,8 @@ public: // attached table entries
 
 private:
   Name m_name;
+
+private:
   Node* m_node;
   Entry* m_parent;
   std::vector<Entry*> m_children;

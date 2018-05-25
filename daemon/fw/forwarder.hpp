@@ -42,7 +42,7 @@
 namespace nfd {
 
 namespace fw {
-class Strategy;
+  class Strategy;
 } // namespace fw
 
 /** \brief main class of NFD
