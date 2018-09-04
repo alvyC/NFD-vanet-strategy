@@ -147,6 +147,11 @@ public:
     /** \brief enables self-learning forwarding support
      */
     bool allowSelfLearning = false;
+
+    /** \brief enables location feature in nodes
+    */
+    bool allowDLocationField = false;
+    bool allowPLocationField = false;
   };
 
   /** \brief counters provided by GenericLinkService
