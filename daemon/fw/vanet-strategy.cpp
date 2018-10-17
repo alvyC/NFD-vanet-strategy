@@ -30,6 +30,7 @@
 
 #include "core/logger.hpp"
 #include "algorithm.hpp"
+#include "../../TraciApi/TraCIAPI.h"
 
 namespace nfd {
 namespace fw {
@@ -54,6 +55,7 @@ VanetStrategy::VanetStrategy(Forwarder& forwarder, const Name& name)
       "AccessStrategy does not support version " + to_string(*parsed.version)));
   }
   this->setInstanceName(makeInstanceName(name, getStrategyName()));
+  TraCIAPI client;
 }
 
 void

@@ -143,7 +143,13 @@ def configure(conf):
 
 def build(bld):
     version(bld)
-
+    
+    bld.stlib(
+    	source=bld.path.ant_glob('TraciApi/**/*.cpp'),
+        target='traci',
+        features="pch"
+        )
+   
     bld(features='subst',
         name='version.hpp',
         source='core/version.hpp.in',
@@ -162,7 +168,7 @@ def build(bld):
         target='core-objects',
         features='pch',
         source=bld.path.ant_glob('core/**/*.cpp'),
-        use='version.hpp NDN_CXX BOOST LIBRT',
+        use='version.hpp NDN_CXX BOOST LIBRT traci',
         includes='.',
         export_includes='.',
         headers='core/common.hpp')
